@@ -3,7 +3,7 @@ import requests
 
 openai_client = OpenAI()
 
-
+#1.
 def speech_to_text(audio_binary):
     #Set up Watson Speech-to-Text HTTP Api url
     base_url = 'https://sn-watson-stt.labs.skills.network'
@@ -28,11 +28,33 @@ def speech_to_text(audio_binary):
         print('recognised text: ', text)
         return text
 
-
+#3.
 def text_to_speech(text, voice=""):
-    return None
+    #Set up Watson tts HTTP Api url
+    base_url='https://sn-watson-tts.labs.skills.network'
+    api_url = base_url + '/text-to-speech/api/v1/synthesize?output=output_text.wav'
 
+    #Adding voice as parameter to the api_url if it's not empty or not default (the user has selected a preferred voice)
+    if voice != "" and voice != "default":
+        api_url += "&voice=" +voice  #append a voice parameter to the api_url if the user has sent a preferred voice
 
+    #Set the headers dictionary for HTTP request
+    headers = {
+        'Accept': 'audio/wav', #tells Watson i'm sending an audio having wav format
+        'Content-Type': 'application/json',
+    }
+
+    #Set the body of HTTP request, this text will then be processed and converted to a speech.
+    json_data = {
+        'text': text,
+    }
+
+    #Send a http Post request to Watson Text-to-Speech Service
+    response = requests.port(api_url, headers=headers, json=json_data)
+    print('text to speech resonse:', response)
+    return response.content
+
+#2.
 #Take in a prompt and pass it to OpenAI's GPT-3 API
 def openai_process_message(user_message): 
     #Set the prompt for OpenAI Api
